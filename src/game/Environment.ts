@@ -4,6 +4,7 @@ import {
   MeshBuilder,
   StandardMaterial,
   Color3,
+  PhysicsImpostor
 } from "@babylonjs/core";
 
 export class Environment {
@@ -28,6 +29,16 @@ export class Environment {
     groundMaterial.emissiveColor = new Color3(0.05, 0.05, 0.05); // Légère auto-illumination
     ground.material = groundMaterial;
     ground.checkCollisions = true;
+    
+    // Ajouter un impostor physique au sol pour que les douilles puissent entrer en collision avec lui
+    if (this.scene.getPhysicsEngine()) {
+      ground.physicsImpostor = new PhysicsImpostor(
+        ground,
+        PhysicsImpostor.BoxImpostor,
+        { mass: 0, restitution: 0.5, friction: 0.5 },
+        this.scene
+      );
+    }
   }
 
   private createWalls(): void {
@@ -44,6 +55,16 @@ export class Environment {
     backWallMat.emissiveColor = new Color3(0.1, 0.1, 0.2); // Ajouter une émission pour l'auto-illumination
     backWall.material = backWallMat;
     backWall.checkCollisions = true;
+    
+    // Ajouter un impostor physique au mur du fond
+    if (this.scene.getPhysicsEngine()) {
+      backWall.physicsImpostor = new PhysicsImpostor(
+        backWall,
+        PhysicsImpostor.BoxImpostor,
+        { mass: 0, restitution: 0.5, friction: 0.5 },
+        this.scene
+      );
+    }
 
     // Mur gauche
     const leftWall = MeshBuilder.CreateBox(
@@ -56,6 +77,16 @@ export class Environment {
     leftWallMat.diffuseColor = new Color3(0.6, 0.4, 0.4);
     leftWall.material = leftWallMat;
     leftWall.checkCollisions = true;
+    
+    // Ajouter un impostor physique au mur gauche
+    if (this.scene.getPhysicsEngine()) {
+      leftWall.physicsImpostor = new PhysicsImpostor(
+        leftWall,
+        PhysicsImpostor.BoxImpostor,
+        { mass: 0, restitution: 0.5, friction: 0.5 },
+        this.scene
+      );
+    }
 
     // Mur droit
     const rightWall = MeshBuilder.CreateBox(
@@ -68,5 +99,15 @@ export class Environment {
     rightWallMat.diffuseColor = new Color3(0.6, 0.4, 0.4);
     rightWall.material = rightWallMat;
     rightWall.checkCollisions = true;
+    
+    // Ajouter un impostor physique au mur droit
+    if (this.scene.getPhysicsEngine()) {
+      rightWall.physicsImpostor = new PhysicsImpostor(
+        rightWall,
+        PhysicsImpostor.BoxImpostor,
+        { mass: 0, restitution: 0.5, friction: 0.5 },
+        this.scene
+      );
+    }
   }
 }

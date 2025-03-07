@@ -1,5 +1,5 @@
 import { BaseWeapon } from "../BaseWeapon";
-import { Scene, Vector3 } from "@babylonjs/core";
+import { Vector3 } from "@babylonjs/core";
 
 export interface WeaponModule {
   apply(weapon: BaseWeapon): void;

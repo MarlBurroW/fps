@@ -7,14 +7,14 @@ import {
   Observer,
 } from "@babylonjs/core";
 import { WeaponManager } from "./WeaponManager";
-import { ProjectileManager } from "./ProjectileManager";
 import { TargetManager } from "./TargetManager";
 
 export class Player {
   private scene: Scene;
   private camera: FreeCamera;
   private weaponManager: WeaponManager;
-  private projectileManager: ProjectileManager;
+  private targetManager: TargetManager;
+  private onTargetHit: (targetIndex: number, hitPosition: Vector3) => void;
 
   private health: number = 100;
   private score: number = 0;
@@ -44,6 +44,8 @@ export class Player {
     onTargetHit: (targetIndex: number, hitPosition: Vector3) => void
   ) {
     this.scene = scene;
+    this.targetManager = targetManager;
+    this.onTargetHit = onTargetHit;
 
     // Définir la vitesse initiale
     this.walkSpeed = 2;
@@ -57,15 +59,6 @@ export class Player {
 
     // Initialisation du gestionnaire d'armes
     this.weaponManager = new WeaponManager();
-
-    // Initialisation du gestionnaire de projectiles
-    this.projectileManager = new ProjectileManager(
-      scene,
-      this.camera,
-      this.weaponManager.getCurrentWeapon(),
-      targetManager,
-      onTargetHit
-    );
 
     // Configuration des contrôles
     this.setupControls();
@@ -84,8 +77,6 @@ export class Player {
   }
 
   public update(): void {
-    this.projectileManager.update();
-
     // Mise à jour de la vitesse en fonction de l'état (course/marche)
     this.camera.speed = this.isRunning ? this.runSpeed : this.walkSpeed;
 
@@ -123,12 +114,10 @@ export class Player {
     return this.weaponManager;
   }
 
-  public getProjectileManager(): ProjectileManager {
-    return this.projectileManager;
-  }
-
   public switchWeapon(weaponName: string): boolean {
-    return this.weaponManager.switchWeapon(weaponName);
+    const success = this.weaponManager.switchWeapon(weaponName);
+    
+    return success;
   }
 
   // Méthode pour gérer le mouvement vertical (saut, gravité)
@@ -262,22 +251,7 @@ export class Player {
   }
 
   private setupControls(): void {
-    // Gestion du tir
-    this.scene.onPointerDown = (evt) => {
-      if (evt.button === 0) {
-        // Clic gauche
-        this.projectileManager.startFiring();
-      }
-    };
-
-    this.scene.onPointerUp = (evt) => {
-      if (evt.button === 0) {
-        // Clic gauche
-        this.projectileManager.stopFiring();
-      }
-    };
-
-    // Gestion des touches pour les mouvements spéciaux
+    // Garder uniquement la gestion du clavier ici
     this.keyboardObserver = this.scene.onKeyboardObservable.add((kbInfo) => {
       switch (kbInfo.type) {
         case KeyboardEventTypes.KEYDOWN:

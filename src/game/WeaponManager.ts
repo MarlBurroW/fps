@@ -5,16 +5,15 @@ import { WeaponModule } from "./Weapons/WeaponModules/WeaponModule";
 export class WeaponManager {
   private weapons: Map<string, BaseWeapon> = new Map();
   private currentWeapon: BaseWeapon | null = null;
+  private currentWeaponName: string | null = null;
 
   constructor() {}
 
-  public registerWeapon(name: string, weapon: BaseWeapon): void {
+  public async registerWeapon(name: string, weapon: BaseWeapon): Promise<void> {
+    // Attendre que l'arme soit complètement chargée
+   
     this.weapons.set(name, weapon);
-
-    // Si c'est la première arme, la définir comme arme actuelle
-    if (!this.currentWeapon) {
-      this.currentWeapon = weapon;
-    }
+    weapon.setVisibility(false);
   }
 
   public getWeapon(name: string): BaseWeapon | null {
@@ -22,19 +21,20 @@ export class WeaponManager {
   }
 
   public switchWeapon(name: string): boolean {
-    const weapon = this.weapons.get(name);
-    if (weapon) {
-      if (this.currentWeapon) {
-        // Cacher l'arme actuelle
-        this.currentWeapon.setVisibility(false);
-      }
+    if (name === this.currentWeaponName) return false;
 
-      // Afficher la nouvelle arme
-      weapon.setVisibility(true);
-      this.currentWeapon = weapon;
-      return true;
+    const newWeapon = this.weapons.get(name);
+    if (!newWeapon) return false;
+
+    if (this.currentWeapon) {
+      this.currentWeapon.setVisibility(false);
     }
-    return false;
+
+    newWeapon.setVisibility(true);
+    this.currentWeapon = newWeapon;
+    this.currentWeaponName = name;
+
+    return true;
   }
 
   public getCurrentWeapon(): BaseWeapon | null {
